@@ -3,6 +3,8 @@ import redis
 import speech2text
 import translate
 import pronounce
+from collections import OrderedDict
+
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -13,11 +15,11 @@ app.config['last_id'] = max(map(int, db.keys())) if len(db.keys()) else 0
 
 @app.route("/")
 def index():
-    history = dict(zip(['text', 'translation'], [[], []]))
+    history = OrderedDict(zip(['text', 'translation'], [[], []]))
     for key in sorted(map(int, db.keys())):
         for name, value in db.hgetall(key).items():
             history[name].append(value)
-    history = {name: '\n'.join(history[name]).strip() for name in history}
+    history = {field: '\n'.join(texts).strip() for field, texts in history.items()}
     return render_template('index.html', data=history)
 
 
@@ -27,13 +29,13 @@ def clear_history():
     return 'nothing'
 
 
-def add_row(text):
+def add_row(text, translation):
     app.config['last_id'] += 1
-    last_translation = translate.get_translation(text)
     new_id = str(app.config['last_id'])
-    db.hmset(new_id, {'text': text, 'translation': last_translation})
-    output_filename = pronounce.text2speech(last_translation)
-    return output_filename
+    text = text.split('\n')[-1]
+    translation = translation.split('\n')[-1]
+    db.hmset(new_id, {'text': text, 'translation': translation})
+    pronounce.text2speech(translation)
 
 
 @app.route('/translate-text', methods=['POST'])
@@ -41,9 +43,9 @@ def translate_text():
     data = request.get_json()
     text = data['text']
     translation = translate.get_translation(text)
-
     # for simplicity one text row of textarea is considered as one query and the last sentence saved
-    add_row(text.split('\n')[-1])
+    add_row(text, translation)
+
     return jsonify(text=text, translation=translation)
 
 
@@ -54,23 +56,36 @@ def translate_audio():
         f.save(audio)
     text = speech2text.text_from_audio('audio.wav')
     translation = translate.get_translation(text)
-    add_row(text)
+    add_row(text, translation)
 
     return jsonify(text=text, translation=translation)
 
 
-@app.route('/play_audio')
+@app.route('/play-audio')
 def play_audio():
     def generate():
         with open('output.wav', 'rb') as audio:
-            data = audio.read(1024)
-            while data:
-                yield data
-                data = audio.read(1024)
+            chunk = audio.read(1024)
+            while chunk:
+                yield chunk
+                chunk = audio.read(1024)
 
-    return Response(generate(), mimetype='audio/wav')
+    return Response(generate(), mimetype='audio/x-wav')
 
+
+"""
+@app.route('/play-audio')
+def play_audio():
+    if os.path.exists('output.wav'):
+        with open('output.wav', 'rb') as audio:
+            data = base64.b64encode(audio.read()).decode('UTF-8')
+
+            res = app.response_class(response=json.dumps(data),
+                                     status=200,
+                                     mimetype='application/json')
+        return res
+"""
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", threaded=True, debug=True)
 

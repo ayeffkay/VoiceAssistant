@@ -10,8 +10,7 @@ This is voice assistant prototype.
 * Voice or text input. Speech to text conversion is done with [Google Cloud Speech API](https://cloud.google.com/speech-to-text)
 * Translation from Russian to English using [Google Translate API](https://pypi.org/project/googletrans/)
 * Translation history (can be removed)
-
-Output speech synthesis is implemented with [gTTS](https://pypi.org/project/gTTS/) but doesn't work now (js doesn't recognize link to Response object from Flask).
+* Voice output. Speech synthesis is implemented with [gTTS](https://pypi.org/project/gTTS/)
 
 
 # Usage
@@ -30,7 +29,7 @@ docker-compose up
 ```
 localhost:5000
 ```
-I have not found any other way for audio to be recorded on localhost (if you run 0.0.0.0:5000 audio will not be recorded).
+I have not found any other way for audio to be recorded or played on localhost (if you run 0.0.0.0:5000 audio will not be recorded and played).
 
 4. Sometimes Google Translate API doesn't recognize queries for unknown reasons. You'll get 'Not recognized' output. Important: this is not application error, this is error response from Google's API.
 
