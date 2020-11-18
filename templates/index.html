@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Speech recognition and translation with GoogleAPI">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <title>Translate</title>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Voice assistant</h1>
+            <p>This is voice assistant prototype. Now it can translate from Russian to English and supports speech recognition. Try it yourself!</p> 
+            <div style="font-size:70%">
+                <p>But sometimes GoogleTranslate's API doesn't respond correctly even for simple sentences. I don't know why this happens, but it's normal behavior for now (you'll get 'Not recognized' answer in the output field). Just try to give it few sentences, some time or other they'll be translated.</p>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <form>
+                        <div class="form-group">
+                            <textarea placeholder="Enter text here or record your voice. Then click 'Translate' button." class="form-control" id="text-to-translate" rows="5"></textarea>
+                        </div>
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-primary mb-2" id="record">Record</button>
+                            <button type="submit" class="btn btn-primary mb-2" id="translate">Translate</button>
+                            <button type="button" class="btn btn-primary mb-2" id="clear">Clear history</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col">
+                    <form>
+                        <div class="form-group" id="translator-text-response">
+                            <textarea readonly placeholder="Result" class="form-control" id="translation-result" rows="5"></textarea>
+                        </div>
+                        <div class="output-group-btn">
+                            <audio id="audio" controls="controls">
+                                <source id="audio-src" src="{{ url_for('play_audio') }}" type="audio/x-wav">
+                            </audio>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+    <script type = "text/javascript" src ="/static/js/app.js"></script>
+    <script type="text/javascript">
+        function loadHistory(vars) {
+            document.getElementById('text-to-translate').value = vars['text'];
+            document.getElementById('translation-result').value = vars['translation'];
+        }
+    </script>
+    <script type="text/javascript">loadHistory({{ data|tojson }});</script>
+    <script src="{{ url_for('play_audio') }}"></script>
+  </body>
+</html>
