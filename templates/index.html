@@ -10,10 +10,7 @@
     <body>
         <div class="container">
             <h1>Voice assistant</h1>
-            <p>This is voice assistant prototype. Now it can translate from Russian to English and supports speech recognition. Try it yourself!</p> 
-            <div style="font-size:70%">
-                <p>But sometimes GoogleTranslate's API doesn't respond correctly even for simple sentences. I don't know why this happens, but it's normal behavior for now (you'll get 'Not recognized' answer in the output field). Just try to give it few sentences, some time or other they'll be translated.</p>
-            </div>
+            <p>This is voice assistant prototype. Now it can translate from Russian to English and supports speech recognition. Try it yourself!</p>
             <div class="row">
                 <div class="col">
                     <form>
@@ -23,7 +20,7 @@
                         <div class="input-group-btn">
                             <button type="submit" class="btn btn-primary mb-2" id="record">Record</button>
                             <button type="submit" class="btn btn-primary mb-2" id="translate">Translate</button>
-                            <button type="button" class="btn btn-primary mb-2" id="clear">Clear history</button>
+                            <button type="button" class="btn btn-primary mb-2" id="clear">Clear cache</button>
                         </div>
                     </form>
                 </div>
@@ -48,12 +45,5 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
     <script type = "text/javascript" src ="/static/js/app.js"></script>
-    <script type="text/javascript">
-        function loadHistory(vars) {
-            document.getElementById('text-to-translate').value = vars['text'];
-            document.getElementById('translation-result').value = vars['translation'];
-        }
-    </script>
-    <script type="text/javascript">loadHistory({{ data|tojson }});</script>
   </body>
 </html>

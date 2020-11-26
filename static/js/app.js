@@ -14,11 +14,15 @@ function getAudio(blob) {
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var res = JSON.parse(xhr.responseText);
-            document.getElementById("text-to-translate").value += res['text']+'\n';
-            document.getElementById("translation-result").value += res['translation']+'\n';
+            if (res['cache_flag']) {
+                alert('Response was loaded from cache.')
+            }
+            $('#text-to-translate').val($('#text-to-translate').val() + res['text'] + '\n');
+            $('#translation-result').val($('#translation-result').val() + res['translation'] + '\n');
             playAudio();
+            moveCursor();
         } else {
-            console.log('failed to translate from audio');
+            console.log('Failed to translate from audio');
         }
     }
    
@@ -42,6 +46,16 @@ function playAudio() {
     });
 }
 
+function moveCursor() {
+    var translateVal = document.getElementById('text-to-translate');
+    translateVal.focus();
+    var position = translateVal.selectionEnd;
+    if (translateVal.value != '') {
+        position.value = translateVal.value.substring(0, position) + '\n' + translateVal.value.substring(position);
+    }
+    position.selectionEnd = position;
+}
+
 function translate() {
     var translateVal = $('#text-to-translate').val();
     var translateRequest = {'text': translateVal};
@@ -63,12 +77,21 @@ function translate() {
             data: JSON.stringify(translateRequest),
             success: function (response) {
                 var res = JSON.parse(JSON.stringify(response));
-                $('#translation-result').val(res['translation'] + '\n');
+                if (res['cache_flag']) {
+                    alert('Response was loaded from cache.');
+                    $('#translation-result').val($('#translation-result').val() + res['translation'] + '\n');
+                }
+                else {
+                    $('#translation-result').val(res['translation'] + '\n');
+                }
                 playAudio();
+                moveCursor();
             }
         });
     }
 }
+
+
 
 $(function() {
     $("#translate").on("click", function(e) {
